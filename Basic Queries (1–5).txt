@@ -1,0 +1,42 @@
+Basic Queries (1–5)
+List all product names and their list prices.
+Table: Production.Product
+
+Find employees hired after 2010.
+Table: HumanResources.Employee
+
+Retrieve all customers who live in 'Seattle'.
+Tables: Sales.Customer, Person.Person, Person.Address, Person.BusinessEntityAddress
+
+Show top 10 most expensive products.
+
+List all employees with their job title and department name.
+Tables: HumanResources.Employee, HumanResources.EmployeeDepartmentHistory, HumanResources.Department
+
+ Joins & Aggregations (6–10)
+Find total sales amount per year.
+Tables: Sales.SalesOrderHeader
+
+List product names and their categories.
+Tables: Production.Product, Production.ProductSubcategory, Production.ProductCategory
+
+Display the number of employees per department.
+
+Get total order quantity for each product.
+Tables: Sales.SalesOrderDetail
+
+Find the average list price per product subcategory.
+
+Subqueries & Nested SELECTs (11–15)
+List products that have a higher list price than the average list price.
+
+Find employees who do not have a manager.
+
+Get customers who have placed more than 5 orders.
+
+List all products that have never been sold.
+
+Find the second highest priced product in each subcategory.
+
+
+

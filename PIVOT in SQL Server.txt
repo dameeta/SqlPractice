@@ -1,0 +1,64 @@
+PIVOT in SQL Server
+The PIVOT operator in SQL Server transforms rows into columns, allowing you to summarize and reshape data for reporting purposes.
+
+
+Basic Syntax of PIVOT
+
+SELECT <non-pivoted column>,
+       [PivotColumn1], [PivotColumn2], ...
+FROM 
+(
+    SELECT <column to group>, <column to pivot>, <aggregation value>
+    FROM <table>
+) AS SourceTable
+PIVOT
+(
+    <aggregate function>(<column to aggregate>)
+    FOR <column to pivot> IN ([PivotColumn1], [PivotColumn2], ...)
+) AS PivotTable;
+
+Example using AdventureWorks
+Get total order quantity by product for each year from Sales.SalesOrderDetail and Sales.SalesOrderHeader.
+
+Step 1: Pivot Total Order Quantity by Year
+
+SELECT ProductID, [2011], [2012], [2013], [2014]
+FROM
+(
+    SELECT 
+        sod.ProductID,
+        YEAR(soh.OrderDate) AS OrderYear,
+        sod.OrderQty
+    FROM Sales.SalesOrderDetail sod
+    JOIN Sales.SalesOrderHeader soh
+        ON sod.SalesOrderID = soh.SalesOrderID
+) AS SourceTable
+PIVOT
+(
+    SUM(OrderQty)
+    FOR OrderYear IN ([2011], [2012], [2013], [2014])
+) AS PivotTable
+ORDER BY ProductID;
+
+
+Explanation:
+YEAR(soh.OrderDate) – Extracts the year from the order date.
+
+SUM(OrderQty) – Aggregates total quantity ordered.
+
+PIVOT – Converts distinct years into columns.
+
+The inner query fetches raw data, and the outer query applies the pivoting logic.
+
+
+UNPIVOT Example (reverse PIVOT)
+SELECT ProductID, OrderYear, TotalQty
+FROM
+(
+    SELECT ProductID, [2011], [2012], [2013], [2014]
+    FROM <pivoted_table>
+) p
+UNPIVOT
+(
+    TotalQty FOR OrderYear IN ([2011], [2012], [2013], [2014])
+) AS unpvt;

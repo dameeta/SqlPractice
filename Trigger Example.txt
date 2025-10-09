@@ -1,0 +1,59 @@
+Scenario: Audit Insertions in Sales.SalesOrderHeader
+ 
+Create a trigger to log every new sales order added to Sales.SalesOrderHeader into a custom audit table.
+
+Step 1: Create the Audit Table
+
+CREATE TABLE Sales.SalesOrderAudit (
+    AuditID INT IDENTITY(1,1) PRIMARY KEY,
+    SalesOrderID INT,
+    CustomerID INT,
+    OrderDate DATETIME,
+    TotalDue MONEY,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+Step 2: Create the Trigger
+
+CREATE TRIGGER trg_AuditSalesOrderInsert
+ON Sales.SalesOrderHeader
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO Sales.SalesOrderAudit (SalesOrderID, CustomerID, OrderDate, TotalDue)
+    SELECT 
+        SalesOrderID, 
+        CustomerID, 
+        OrderDate, 
+        TotalDue
+    FROM INSERTED;
+END;
+ Step 3: Test the Trigger
+
+-- Insert a sample sales order (use real data values suitable for your schema)
+INSERT INTO Sales.SalesOrderHeader (
+    RevisionNumber, OrderDate, DueDate, ShipDate, Status,
+    OnlineOrderFlag, SalesOrderNumber, PurchaseOrderNumber,
+    AccountNumber, CustomerID, SalesPersonID, TerritoryID,
+    BillToAddressID, ShipToAddressID, ShipMethodID,
+    CreditCardID, CreditCardApprovalCode, SubTotal,
+    TaxAmt, Freight, TotalDue, Comment, rowguid, ModifiedDate
+)
+VALUES (
+    1, GETDATE(), GETDATE(), GETDATE(), 5,
+    1, 'SO99999', 'PO123456',
+    '10-4020-000676', 11000, 279, 1,
+    708, 708, 1,
+    1388, 'APPROVED123', 1000,
+    80, 20, 1100, 'New Trigger Order', NEWID(), GETDATE()
+);
+ Step 4: View the Audit Result
+
+SELECT * FROM Sales.SalesOrderAudit ORDER BY AuditID DESC;
+
+ Notes:
+INSERTED is a pseudo-table that holds the newly inserted rows.
+
+Triggers can also be created for UPDATE or DELETE actions.
+
+It's a best practice to keep trigger logic simple and avoid long-running operations.
